@@ -1,4 +1,4 @@
--- FINAL SUPABASE SCHEMA FOR CASHEW (PLATINUM TIER)
+-- FINAL SUPABASE SCHEMA FOR SPLICE (PLATINUM TIER)
 -- Version: 2.0 (Complete)
 -- Includes: Personal Finance, Groups, Splitwise Features, Activity Feed, Storage, and RLS.
 

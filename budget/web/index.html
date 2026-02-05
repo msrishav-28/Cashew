@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -27,29 +28,33 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/pg" href="favicon/png"/>
-  <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+  <link rel="icon" type="image/pg" href="favicon/png" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FFFFFF">
-  <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#000000">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
 
-  <title>Cashew</title>
+  <title>Splice</title>
   <link rel="manifest" href="manifest.json">
 
-  <meta name="title" content="Cashew" />
-  <meta name="description" content="A budget and financial tracking application designed for you" />
+  <meta name="title" content="Splice" />
+  <meta name="description" content="Splice: A premium financial shared-expense tracker" />
 
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://cashewapp.web.app/assets/preview.png" />
-  <meta property="og:title" content="Cashew" />
-  <meta property="og:description" content="A budget and financial tracking application designed for you" />
-  <meta property="og:image" content="https://cashewapp.web.app/assets/preview.png" />
+  <meta property="og:url" content="https://spliceapp.web.app/assets/preview.png" />
+  <meta property="og:title" content="Splice - Budget & Expense Tracker" />
+  <meta property="og:description"
+    content="Manage your personal finances and track your money, expenses and budget with Splice." />
+  <meta property="og:image" content="https://spliceapp.web.app/assets/preview.png" />
 
-  <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content="https://cashewapp.web.app/assets/preview.png" />
-  <meta property="twitter:title" content="Cashew" />
-  <meta property="twitter:description" content="A budget and financial tracking application designed for you" />
-  <meta property="twitter:image" content="https://cashewapp.web.app/assets/preview.png" />
+  <!-- Twitter Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="twitter:domain" content="spliceapp.web.app">
+  <meta property="twitter:url" content="https://spliceapp.web.app/assets/preview.png" />
+  <meta name="twitter:title" content="Splice - Budget & Expense Tracker">
+  <meta name="twitter:description"
+    content="Manage your personal finances and track your money, expenses and budget with Splice.">
+  <meta property="twitter:image" content="https://spliceapp.web.app/assets/preview.png" />
 
   <script>
     // The value below is injected by flutter build, do not touch.
@@ -58,6 +63,7 @@
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
 </head>
+
 <body oncontextmenu="return false;">
   <style>
     @media (prefers-color-scheme: dark) {
@@ -86,7 +92,8 @@
         width: 100%;
       }
 
-      #loading .loading-spinner, #loading .loading-icon {
+      #loading .loading-spinner,
+      #loading .loading-icon {
         transition: opacity 0.5s;
       }
 
@@ -94,7 +101,8 @@
         opacity: 0;
       }
 
-      #loading.init_done .loading-spinner, #loading.init_done .loading-icon {
+      #loading.init_done .loading-spinner,
+      #loading.init_done .loading-icon {
         /* animation: .33s ease-in-out 0s 1 forwards zoom; */
         opacity: 0;
       }
@@ -104,20 +112,20 @@
         display: inline-block;
         width: 45px;
         height: 45px;
-        border: 4px solid rgba(255,255,255,.3);
+        border: 4px solid rgba(255, 255, 255, .3);
         border-radius: 50%;
         border-top-color: #e3e7ff;
         animation: spin 1s linear infinite;
         opacity: .66;
       }
 
-      .column{
+      .column {
         display: flex;
         flex-direction: column;
         align-items: center;
       }
 
-      .loading-icon{
+      .loading-icon {
         margin: 40px 10px;
         width: min(30vh, 30vw);
         height: min(30vh, 30vw);
@@ -127,30 +135,31 @@
         0% {
           transform: rotate(0deg);
         }
+
         100% {
           transform: rotate(360deg);
         }
       }
     </style>
     <div class="column">
-      <img src="./icons/Icon.png" class="loading-icon"/>
+      <img src="./icons/Icon.png" class="loading-icon" />
       <div class="loading-spinner"></div>
     </div>
   </div>
   <script>
-    window.addEventListener('load', function(ev) {
+    window.addEventListener('load', function (ev) {
       var loading = document.querySelector('#loading');
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
         }
-      }).then(function(engineInitializer) {
+      }).then(function (engineInitializer) {
         loading.classList.add('main_done');
         return engineInitializer.initializeEngine({
           useColorEmoji: true,
         });
-      }).then(function(appRunner) {
+      }).then(function (appRunner) {
         loading.classList.add('init_done');
         return appRunner.runApp();
       }).then(function (_) {
@@ -161,7 +170,7 @@
         }, 200);
 
         // https://github.com/flutter/flutter/issues/55913#issuecomment-1248816491
-        
+
         const flutterRoot = document.getElementsByTagName('flt-glass-pane').item(0);
         flutterRoot.addEventListener('touchstart', (e) => {
           // is not near edge of view, exit
@@ -173,4 +182,5 @@
     });
   </script>
 </body>
+
 </html>

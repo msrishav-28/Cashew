@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-/// The **Flagship Design System** for Cashew.
+/// The **Flagship Design System** for Splice.
 ///
 /// This class acts as the "Law" for the app's visual language.
 /// It provides the "Ingredients of Cool" needed to build both
@@ -31,7 +31,7 @@ class _Colors {
 
   // --- Core Palette ---
   
-  /// The main brand color (Cashew Green-Gold), updated to be more vibrant
+  /// The main brand color (Splice Green-Gold), updated to be more vibrant
   Color get primary => const Color(0xFFD4E157); // Lime 400
   
   /// Darker variant for contrast

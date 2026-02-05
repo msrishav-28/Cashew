@@ -32,14 +32,14 @@ StreamSubscription<List<PurchaseDetails>>? purchaseListener;
 Map<String, ProductDetails> storeProducts = {};
 Map<String, String> productIDs = {
   'yearly': getPlatform(ignoreEmulation: true) == PlatformOS.isIOS
-      ? 'cashew.pro.yearly' //iOS
-      : 'cashew.pro.yearly', //Android
+      ? 'splice.pro.yearly' //iOS
+      : 'splice.pro.yearly', //Android
   'monthly': getPlatform(ignoreEmulation: true) == PlatformOS.isIOS
-      ? 'cashew.pro.monthly' //iOS
-      : 'cashew.pro.monthly', //Android
+      ? 'splice.pro.monthly' //iOS
+      : 'splice.pro.monthly', //Android
   'lifetime': getPlatform(ignoreEmulation: true) == PlatformOS.isIOS
-      ? 'cashew.pro.life' //iOS
-      : 'cashew.pro.lifetime', //Android
+      ? 'splice.pro.life' //iOS
+      : 'splice.pro.lifetime', //Android
 };
 
 // A user has paid is appStateSettings["purchaseID"] is not null
@@ -84,14 +84,14 @@ class PremiumPage extends StatelessWidget {
                               ),
                               Column(
                                 children: [
-                                  CashewProBanner(large: true),
+                                  SpliceProBanner(large: true),
                                   SizedBox(height: 4),
                                   TextFont(
                                     text: "budget-like-a-pro".tr() +
                                         " " +
                                         globalAppName +
                                         " " +
-                                        "Pro",
+                                        "pro".tr(),
                                     fontSize: 16,
                                     textColor: Colors.black,
                                     maxLines: 3,
@@ -427,8 +427,8 @@ class _FreePremiumMessageState extends State<FreePremiumMessage> {
   }
 }
 
-class CashewProBanner extends StatelessWidget {
-  const CashewProBanner({this.large = false, this.fontColor, super.key});
+class SpliceProBanner extends StatelessWidget {
+  const SpliceProBanner({this.large = false, this.fontColor, super.key});
   final bool large;
   final Color? fontColor;
 
@@ -446,7 +446,7 @@ class CashewProBanner extends StatelessWidget {
           textColor: fontColor ?? Colors.black,
         ),
         SizedBox(width: 2),
-        TextPill(fontSize: large ? 21 : 15, text: "Pro"),
+        TextPill(fontSize: large ? 21 : 15, text: "pro".tr()),
       ],
     );
   }
@@ -483,10 +483,10 @@ openManagePurchase() {
     openUrl("https://apps.apple.com/account/subscriptions");
   } else if (appStateSettings["purchaseID"] == productIDs["monthly"]) {
     openUrl(
-        "https://play.google.com/store/account/subscriptions?sku=cashew.pro.monthly&package=com.budget.tracker_app");
+        "https://play.google.com/store/account/subscriptions?sku=splice.pro.monthly&package=com.budget.tracker_app");
   } else if (appStateSettings["purchaseID"] == productIDs["yearly"]) {
     openUrl(
-        "https://play.google.com/store/account/subscriptions?sku=cashew.pro.yearly&package=com.budget.tracker_app");
+        "https://play.google.com/store/account/subscriptions?sku=splice.pro.yearly&package=com.budget.tracker_app");
   } else {
     if (getPlatform(ignoreEmulation: true) == PlatformOS.isAndroid)
       openUrl("https://play.google.com/store/account/subscriptions");
@@ -531,7 +531,7 @@ class ManageSubscription extends StatelessWidget {
                     fontSize: 16,
                   ),
             SizedBox(height: 10),
-            CashewProBanner(fontColor: getColor(context, "black")),
+            SpliceProBanner(fontColor: getColor(context, "black")),
             TextFont(
               text: currentPlanName ?? "",
               fontSize: 23,
@@ -709,7 +709,7 @@ showHelpRestorePopup(BuildContext context) {
       if (openResult == false) copyToClipboard("dapperappdeveloper@gmail.com");
     },
     onExtra: () =>
-        openUrl("https://cashewapp.web.app/faq.html#restoring-purchases"),
+        openUrl("https://spliceapp.web.app/faq.html#restoring-purchases"),
     onExtraLabel: "FAQ".tr(),
   );
 }
@@ -1297,7 +1297,7 @@ class _FadeOutAndLockFeatureState extends State<FadeOutAndLockFeature> {
                   fontSize: 15,
                 ),
                 SizedBox(height: 5),
-                CashewProBanner(fontColor: getColor(context, "black")),
+                SpliceProBanner(fontColor: getColor(context, "black")),
                 SizedBox(height: 15),
                 LowKeyButton(
                   onTap: openPremiumPopup,
@@ -1459,7 +1459,7 @@ class PremiumBanner extends StatelessWidget {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    CashewProBanner(),
+                                    SpliceProBanner(),
                                     purchased
                                         ? Container(
                                             margin:

@@ -108,7 +108,7 @@ class MoreActionsPageState extends State<MoreActionsPage> {
                       ? Icons.live_help_outlined
                       : Icons.live_help_rounded,
                   action: () {
-                    openUrl("https://cashewapp.web.app/faq.html");
+                    openUrl("https://spliceapp.web.app/faq.html");
                   },
                 ),
             ],
@@ -1044,7 +1044,7 @@ class AppAnimationSetting extends StatelessWidget {
                   ? AppAnimations.minimal.index
                   : value == "disabled"
                       ? AppAnimations.disabled.index
-                      : "all",
+                      : AppAnimations.all.index,
           updateGlobalState: false,
           setStateAllPageFrameworks: true,
         );

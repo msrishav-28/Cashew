@@ -184,7 +184,7 @@ class GroupInviteService {
   }
 
   static String generateShareableLink(GroupInvite invite) {
-    final origin = appStateSettings['webAppOrigin'] ?? 'https://cashew.app';
+    final origin = appStateSettings['webAppOrigin'] ?? 'https://splice.app';
     return origin + '/join-group?code=' + invite.code;
   }
 }

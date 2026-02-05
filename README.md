@@ -1,4 +1,4 @@
-# Cashew (Platinum Tier)
+# Splice (Platinum Tier)
 
 ![Flutter Version](https://img.shields.io/badge/Flutter-3.19.0-blue?style=for-the-badge&logo=flutter)
 ![Dart Version](https://img.shields.io/badge/Dart-3.0.0-blue?style=for-the-badge&logo=dart)
@@ -6,7 +6,7 @@
 ![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel)
 ![License](https://img.shields.io/badge/License-GPLv3-red?style=for-the-badge)
 
-**Cashew** is a premium, offline-first financial management platform designed for the modern web. It combines personal budgeting with advanced group expense splitting, wrapped in a high-fidelity "Platinum Tier" interface featuring glassmorphism, mesh gradients, and fluid animations.
+**Splice** is a premium, offline-first financial management platform designed for the modern web. It combines personal budgeting with advanced group expense splitting, wrapped in a high-fidelity "Platinum Tier" interface featuring glassmorphism, mesh gradients, and fluid animations.
 
 Rebuilt in 2026, this version introduces a robust hybrid architecture: **Drift (SQLite)** for offline resilience and **Supabase (PostgreSQL)** for real-time cloud synchronization.
 
@@ -77,7 +77,7 @@ The application is configured for seamless deployment on Vercel.
 ### Setup
 1.  **Clone the repository**:
     ```bash
-    git clone https://github.com/jameskokoska/Cashew.git
+    git clone https://github.com/jameskokoska/Splice.git
     ```
 
 2.  **Database Setup (Supabase)**:

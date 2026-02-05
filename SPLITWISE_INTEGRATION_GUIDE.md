@@ -1,4 +1,4 @@
-# Splitwise Integration Guide for Cashew Web/PWA
+# Splitwise Integration Guide for Splice Web/PWA
 
 > **Version:** 2.0  
 > **Target Platform:** Web/PWA (Progressive Web App)  
@@ -43,7 +43,7 @@
 
 ## Overview
 
-This guide outlines the complete integration of Splitwise functionality into Cashew's web/PWA application. The goal is to combine personal budget management (existing Cashew features) with group expense splitting (Splitwise features) into a unified, powerful financial management tool.
+This guide outlines the complete integration of Splitwise functionality into Splice's web/PWA application. The goal is to combine personal budget management (existing Splice features) with group expense splitting (Splitwise features) into a unified, powerful financial management tool.
 
 ### Why Web/PWA First?
 
@@ -55,7 +55,7 @@ This guide outlines the complete integration of Splitwise functionality into Cas
 
 ### Project Goals
 
-- ✅ Maintain all existing Cashew personal budget features
+- ✅ Maintain all existing Splice personal budget features
 - ✅ Add complete Splitwise group expense splitting
 - ✅ Ensure seamless UI/UX integration
 - ✅ Support multi-user real-time sync via **Supabase** (migrated from Firebase)
@@ -86,7 +86,7 @@ This guide outlines the complete integration of Splitwise functionality into Cas
   - **Unequal split**: Specify exact amounts, percentages, or shares per person
   - **Multiple payers**: Track when multiple people pay for one expense
   - **You owe the full amount**: When someone pays for you
-- Categorize shared expenses (similar to Cashew's existing categories)
+- Categorize shared expenses (similar to Splice's existing categories)
 - Add receipt images/notes to shared expenses
 - Edit/delete shared expenses
 
@@ -156,10 +156,10 @@ This guide outlines the complete integration of Splitwise functionality into Cas
 
 ## Architecture Changes
 
-### Current Cashew Architecture
+### Current Splice Architecture
 
 ```
-Cashew (Single User)
+Splice (Single User)
 ├── Local Database (Drift/SQLite)
 ├── Firebase Authentication
 ├── Firebase Sync (personal data)
@@ -169,7 +169,7 @@ Cashew (Single User)
 ### New Architecture with Splitwise
 
 ```
-Cashew + Splitwise (Multi-User)
+Splice + Splitwise (Multi-User)
 ├── Local Database (Drift/SQLite)
 │   ├── Personal transactions (existing)
 │   └── Group data cache (new)
@@ -194,7 +194,7 @@ Cashew + Splitwise (Multi-User)
 
 #### 2. **Local-first vs Cloud-first**
 **Decision:** Hybrid approach
-- Personal transactions: Local-first (existing Cashew behavior)
+- Personal transactions: Local-first (existing Splice behavior)
 - Group expenses: Cloud-first with local cache
 
 **Rationale:**
@@ -206,7 +206,7 @@ Cashew + Splitwise (Multi-User)
 **Decision:** Drift for local storage + Firestore for group sync
 
 **Rationale:**
-- Leverage Cashew's existing Drift setup
+- Leverage Splice's existing Drift setup
 - Firestore provides real-time multi-user sync
 - WASM SQLite works great on web
 
@@ -587,7 +587,7 @@ class GroupActivity extends Table {
    - Show all groups user is part of
    - Display group name, members, balance owed/owing
    - Add FAB to create new group
-   - Reuse existing Cashew list widgets where possible
+   - Reuse existing Splice list widgets where possible
 
 2. **Create group details page**
    - File: `budget/lib/pages/group_details_page.dart`
@@ -606,7 +606,7 @@ class GroupActivity extends Table {
 
 4. **Create add shared expense page**
    - File: `budget/lib/pages/add_shared_expense_page.dart`
-   - Amount input (reuse Cashew's amount widget)
+   - Amount input (reuse Splice's amount widget)
    - Category selection (reuse existing categories)
    - Split type selector:
      - Equal split (default)
@@ -674,7 +674,7 @@ class GroupActivity extends Table {
 - `budget/lib/pages/settings_page.dart` (add group settings)
 
 **Design Guidelines:**
-- Follow Cashew's Material You design patterns
+- Follow Splice's Material You design patterns
 - Reuse existing color schemes from `colors.dart`
 - Match existing transaction card designs for expense cards
 - Use consistent padding and spacing
@@ -995,7 +995,7 @@ class GroupActivity extends Table {
 
 #### Tasks:
 
-1. **Integrate with existing Cashew features**
+1. **Integrate with existing Splice features**
    - Allow converting personal expenses to shared expenses
    - Link categories between personal and shared expenses
    - Unified search across personal and shared expenses
@@ -1505,7 +1505,7 @@ class SyncStatus {
   <!-- PWA Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Cashew">
+  <meta name="apple-mobile-web-app-title" content="Splice">
   
   <!-- Theme color -->
   <meta name="theme-color" content="#6750A4">
@@ -2021,10 +2021,10 @@ Target performance metrics for web:
 
 ## Contributing
 
-Since Cashew is GPL-3.0 licensed, your modifications must also be open source. When sharing this project:
+Since Splice is GPL-3.0 licensed, your modifications must also be open source. When sharing this project:
 
 1. Keep GPL-3.0 license
-2. Attribute original Cashew author (jameskokoska)
+2. Attribute original Splice author (jameskokoska)
 3. Document your changes
 4. Share source code with users
 
@@ -2032,14 +2032,14 @@ Since Cashew is GPL-3.0 licensed, your modifications must also be open source. W
 
 ## License
 
-This integration follows Cashew's GPL-3.0 license. See [LICENSE](LICENSE) file.
+This integration follows Splice's GPL-3.0 license. See [LICENSE](LICENSE) file.
 
 ---
 
 ## Contact
 
-**Repository:** https://github.com/msrishav-28/Cashew  
-**Original Cashew:** https://github.com/jameskokoska/Cashew
+**Repository:** https://github.com/msrishav-28/Splice  
+**Original Splice:** https://github.com/jameskokoska/Splice
 
 ---
 

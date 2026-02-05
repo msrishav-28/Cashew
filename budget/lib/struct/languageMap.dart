@@ -5,7 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-String globalAppName = "Cashew";
+String globalAppName = "Splice";
 
 Map<String, dynamic> languageNamesJSON = {};
 loadLanguageNamesJSON() async {
@@ -15,51 +15,14 @@ loadLanguageNamesJSON() async {
 
 Map<String, Locale> supportedLocales = {
   "en": Locale("en"),
-  "fr": Locale("fr"),
-  "es": Locale("es"),
-  "zh": Locale.fromSubtags(languageCode: "zh", scriptCode: "Hans"),
-  "zh_Hant": Locale.fromSubtags(languageCode: "zh", scriptCode: "Hant"),
   "hi": Locale("hi"),
-  "ar": Locale("ar"),
-  "pt": Locale("pt"),
-  "pt_PT": Locale.fromSubtags(languageCode: "pt", countryCode: "PT"),
-  "ru": Locale("ru"),
-  "ja": Locale("ja"),
-  "de": Locale("de"),
-  "ko": Locale("ko"),
-  "tr": Locale("tr"),
-  "it": Locale("it"),
-  "vi": Locale("vi"),
-  "pl": Locale("pl"),
-  "nl": Locale("nl"),
-  "th": Locale("th"),
-  "cs": Locale("cs"),
   "bn": Locale("bn"),
-  "da": Locale("da"),
-  "fil": Locale("fil"),
-  "fi": Locale("fi"),
-  "el": Locale("el"),
   "gu": Locale("gu"),
-  "he": Locale("he"),
-  "hu": Locale("hu"),
-  "id": Locale("id"),
-  "ms": Locale("ms"),
   "ml": Locale("ml"),
   "mr": Locale("mr"),
-  "no": Locale("no"),
-  "fa": Locale("fa"),
-  "ro": Locale("ro"),
-  "sv": Locale("sv"),
   "ta": Locale("ta"),
   "te": Locale("te"),
-  "uk": Locale("uk"),
   "ur": Locale("ur"),
-  "sr": Locale("sr"),
-  "sw": Locale("sw"),
-  "bg": Locale("bg"),
-  "sk": Locale("sk"),
-  "mk": Locale("mk"),
-  "af": Locale("af"),
 };
 
 // In Material App to debug:

@@ -472,7 +472,7 @@
   "error-getting-products": "उत्पाद प्राप्त करना",
   "error-getting-products-description": "ऐप स्टोर से जुड़ने में कोई त्रुटि थी। कृपया बाद में पुन: प्रयास करें।",
   "error-processing-order": "आपकी खरीदारी को संसाधित करने में त्रुटि थी। कृपया पुन: प्रयास करें।",
-  "order-confirmation": "काजू का समर्थन करने के लिए धन्यवाद!",
+  "order-confirmation": "Splice का समर्थन करने के लिए धन्यवाद!",
   "any-previous-purchases-restored": "किसी भी पिछली खरीदारी को बहाल किया गया था",
   "already-purchased": "पहले से ही खरीदा",
   "current-plan": "वर्तमान योजना",
@@ -984,7 +984,7 @@
   "delete-currency-question": "मुद्रा हटाएं?",
   "custom-currency": "कस्टम मुद्रा",
   "select-an-entry-to-set-custom-exchange-rate": "कस्टम विनिमय दर निर्धारित करने के लिए एक प्रविष्टि का चयन करें। नोट: सभी विनिमय दर गणना एक संदर्भ के रूप में USD का उपयोग करते हैं।",
-  "enjoying-cashew-question": "ऐप का आनंद ले रहे हैं?",
+  "enjoying-splice-question": "ऐप का आनंद ले रहे हैं",
   "consider-rating": "एक समीक्षा छोड़ने पर विचार करें यदि आप ऐप का आनंद लेते हैं तो धन्यवाद!",
   "no-thanks": "जी नहीं, धन्यवाद",
   "rate": "दर!",
@@ -1180,5 +1180,6 @@
   "import-warning": "आयात चेतावनी",
   "import-warning-description": "आयात विफल हो सकता है! कृपया सुनिश्चित करें कि आपने वैध काजू [.sqlite] या [.sql] बैकअप फ़ाइल का चयन किया है",
   "duplicate-budget-question": "डुप्लीकेट बजट?",
-  "duplicate-budget": "डुप्लीकेट बजट"
+  "duplicate-budget": "डुप्लीकेट बजट",
+  "pro": "Pro"
 }
