@@ -1,4 +1,5 @@
 import 'package:budget/database/tables.dart';
+import 'package:budget/struct/design_system.dart';
 import 'package:budget/pages/sharedBudgetSettings.dart';
 import 'package:budget/pages/transactionFilters.dart';
 import 'package:budget/struct/currencyFunctions.dart';
@@ -368,10 +369,12 @@ class BudgetContainer extends StatelessWidget {
           );
     return Container(
       decoration: BoxDecoration(
-        boxShadow: boxShadowCheck(boxShadowGeneral(context)),
+        boxShadow: DesignSystem.effects.glassCard.boxShadow,
+        border: DesignSystem.effects.glassCard.border,
+        borderRadius: BorderRadius.circular(24),
       ),
       child: OpenContainerNavigation(
-        borderRadius: 20,
+        borderRadius: 24,
         closedColor: backgroundColor,
         button: (openContainer) {
           return Tappable(
@@ -389,7 +392,7 @@ class BudgetContainer extends StatelessWidget {
                     );
                   }
                 : null,
-            borderRadius: 20,
+            borderRadius: 24,
             child: widget,
             color: backgroundColor,
           );

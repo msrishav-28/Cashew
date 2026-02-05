@@ -1,4 +1,5 @@
 import 'package:budget/colors.dart';
+import 'package:budget/struct/design_system.dart';
 import 'package:budget/database/tables.dart';
 import 'package:budget/functions.dart';
 import 'package:budget/pages/upcomingOverdueTransactionsPage.dart';
@@ -42,15 +43,17 @@ class TransactionsAmountBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration:
-          BoxDecoration(boxShadow: boxShadowCheck(boxShadowGeneral(context))),
+      decoration: DesignSystem.effects.glassCard.copyWith(
+        borderRadius: BorderRadius.circular(15),
+      ),
       child: OpenContainerNavigation(
-        closedColor: getColor(context, "lightDarkAccentHeavyLight"),
+        // Force transparent to show glass
+        closedColor: Colors.transparent, 
         openPage: openPage ?? SizedBox.shrink(),
         borderRadius: 15,
         button: (openContainer) {
           return Tappable(
-            color: getColor(context, "lightDarkAccentHeavyLight"),
+            color: Colors.transparent,
             onTap: () {
               if (openPage != null) openContainer();
             },

@@ -1,6 +1,9 @@
+import 'package:budget/database/operations/shared_expense_operations.dart';
 import 'package:budget/functions.dart';
 import 'package:budget/pages/addTransactionPage.dart';
+import 'package:budget/pages/groups/groupsListPage.dart';
 import 'package:budget/pages/transactionFilters.dart';
+import 'package:budget/pages/groups/groupDetailsPage.dart';
 import 'package:budget/struct/defaultPreferences.dart';
 import 'package:budget/struct/settings.dart';
 import 'package:budget/widgets/fab.dart';
@@ -11,6 +14,7 @@ import 'package:budget/widgets/button.dart';
 import 'package:budget/widgets/openBottomSheet.dart';
 import 'package:budget/widgets/framework/pageFramework.dart';
 import 'package:budget/widgets/tappable.dart';
+import 'package:budget/struct/design_system.dart';
 import 'package:budget/widgets/textInput.dart';
 import 'package:budget/widgets/textWidgets.dart';
 import 'package:budget/widgets/transactionEntries.dart';
@@ -21,6 +25,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:budget/colors.dart';
 import 'package:budget/widgets/framework/popupFramework.dart';
+import 'package:intl/intl.dart';
 
 int roundToNearestNextFifthYear(int year) {
   return (((year + 5) / 5).ceil()) * 5;
@@ -351,6 +356,17 @@ class TransactionsSearchPageState extends State<TransactionsSearchPage>
               showTotalCashFlow: true,
             );
           }),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsetsDirectional.symmetric(
+                horizontal: getHorizontalPaddingConstrained(context),
+              ),
+              child: SharedExpenseSearchResults(
+                key: ValueKey(searchFilters.getFilterString()),
+                filters: searchFilters,
+              ),
+            ),
+          ),
           // TransactionEntries(
           //   simpleListRender: true,
           //   null, null,
@@ -443,6 +459,175 @@ class AppliedFilterChip extends StatelessWidget {
               // ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class SharedExpenseSearchResults extends StatelessWidget {
+  const SharedExpenseSearchResults({super.key, required this.filters});
+
+  final SearchFilters filters;
+
+  Future<List<SharedExpenseWithGroup>> _loadResults() {
+    final queryText = filters.searchQuery?.trim();
+    return SharedExpenseOperations.searchSharedExpenses(
+      searchQuery: (queryText?.isEmpty ?? true) ? null : queryText,
+      startDate: filters.dateTimeRange?.start,
+      endDate: filters.dateTimeRange?.end,
+      categoryFks: filters.categoryPks.isEmpty ? null : filters.categoryPks,
+      minAmount: filters.amountRange?.start,
+      maxAmount: filters.amountRange?.end,
+      limit: 8,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 20, bottom: 20),
+      decoration: DesignSystem.effects.glassCard,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.groups_2_rounded,
+                    color: DesignSystem.colors.primary, size: 28),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Shared expenses',
+                    style: DesignSystem.typography.header2.copyWith(
+                      color: DesignSystem.colors.textPrimary,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+                Tappable(
+                  onTap: () => pushRoute(
+                    context,
+                    GroupsListPage(enableBackButton: true),
+                  ),
+                  borderRadius: 12,
+                  color: DesignSystem.colors.primary.withOpacity(0.1),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    child: Text(
+                      'View groups',
+                      style: DesignSystem.typography.label.copyWith(
+                        color: DesignSystem.colors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            FutureBuilder<List<SharedExpenseWithGroup>>(
+              future: _loadResults(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+                final results = snapshot.data ?? [];
+                if (results.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    child: Text(
+                      'No shared expenses match these filters yet.',
+                      style: DesignSystem.typography.body
+                          .copyWith(color: DesignSystem.colors.textSecondary),
+                    ),
+                  );
+                }
+                return Column(
+                  children: results.map((entry) {
+                    final expense = entry.expense;
+                    final group = entry.group;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: Tappable(
+                        onTap: () => pushRoute(
+                          context,
+                          GroupDetailsPage(groupPk: group.groupPk, groupName: group.name),
+                        ),
+                        borderRadius: 16,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: DesignSystem.colors.background.withOpacity(0.4),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                                color: DesignSystem.colors.glassClear, width: 1),
+                          ),
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: DesignSystem.colors.primary
+                                      .withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(Icons.receipt_long_rounded,
+                                    color: DesignSystem.colors.primary,
+                                    size: 20),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      expense.title,
+                                      style: DesignSystem.typography.title.copyWith(
+                                          color: DesignSystem.colors.textPrimary,
+                                          fontSize: 16),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      group.name +
+                                          ' • ' +
+                                          DateFormat.yMMMd()
+                                              .format(expense.dateCreated),
+                                      style: DesignSystem.typography.label
+                                          .copyWith(
+                                              color: DesignSystem.colors
+                                                  .textSecondary),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                formatCurrencyWithName(
+                                  expense.amount,
+                                  expense.currency,
+                                  alwaysShowSymbol: true,
+                                ),
+                                style: DesignSystem.typography.header2.copyWith(
+                                  color: DesignSystem.colors.textPrimary,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

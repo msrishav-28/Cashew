@@ -7,6 +7,7 @@ import 'package:budget/pages/budgetsListPage.dart';
 import 'package:budget/pages/creditDebtTransactionsPage.dart';
 import 'package:budget/pages/editHomePage.dart';
 import 'package:budget/pages/editObjectivesPage.dart';
+import 'package:budget/pages/groups/groupsListPage.dart';
 import 'package:budget/pages/homePage/homePageNetWorth.dart';
 import 'package:budget/pages/objectivesListPage.dart';
 import 'package:budget/pages/premiumPage.dart';
@@ -266,6 +267,20 @@ class MorePages extends StatelessWidget {
                         UpcomingOverdueTransactions(overdueTransactions: null),
                     title: navBarIconsData["scheduled"]!.label.tr(),
                     icon: navBarIconsData["scheduled"]!.iconData,
+                    isOutlined: true,
+                  ),
+                ),
+              ],
+            ),
+          if (hasSideNavigation == false)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: SettingsContainerOpenPage(
+                    openPage: GroupsListPage(enableBackButton: true),
+                    title: navBarIconsData["groups"]!.label.tr(),
+                    icon: navBarIconsData["groups"]!.iconData,
                     isOutlined: true,
                   ),
                 ),

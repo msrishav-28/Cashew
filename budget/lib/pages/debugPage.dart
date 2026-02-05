@@ -337,10 +337,17 @@ class DebugPage extends StatelessWidget {
             onSwitched: (value) async {
               updateSettings("sharedBudgets", value,
                   updateGlobalState: true, pagesNeedingRefresh: [0, 1, 2, 3]);
+              if (value == true) {
+                openSnackbar(SnackbarMessage(
+                  title: "Feature Deprecated",
+                  description: "Shared Budgets has been replaced by Groups. Use Groups for collaborative expense tracking.",
+                  icon: Icons.info_outline,
+                ));
+              }
             },
-            title: "Enable Shared Budgets",
+            title: "Enable Shared Budgets (Deprecated)",
             description:
-                "In testing, share budgets and transactions with other users.",
+                "Legacy feature - replaced by Groups. Enabling may show non-functional UI.",
             initialValue: appStateSettings["sharedBudgets"] == true,
             icon: appStateSettings["outlinedIcons"]
                 ? Icons.share_outlined

@@ -8,6 +8,7 @@ import 'package:budget/struct/currencyFunctions.dart';
 import 'package:budget/struct/databaseGlobal.dart';
 import 'package:budget/struct/randomConstants.dart';
 import 'package:budget/struct/settings.dart';
+import 'package:budget/struct/design_system.dart';
 import 'package:budget/widgets/budgetContainer.dart';
 import 'package:budget/widgets/categoryIcon.dart';
 import 'package:budget/widgets/editRowEntry.dart';
@@ -394,11 +395,11 @@ class ObjectiveContainer extends StatelessWidget {
     double borderRadius =
         getPlatform() == PlatformOS.isIOS && forceAndroidBubbleDesign == false
             ? 0
-            : 20;
+            : 24;
     Color containerColor =
         getPlatform() == PlatformOS.isIOS && forceAndroidBubbleDesign == false
             ? Theme.of(context).colorScheme.background
-            : getColor(context, "lightDarkAccentHeavyLight");
+            : Colors.transparent; // Transparent for Glass
     EdgeInsetsDirectional containerPadding = EdgeInsetsDirectional.only(
       start:
           getPlatform() == PlatformOS.isIOS && forceAndroidBubbleDesign == false
@@ -418,12 +419,9 @@ class ObjectiveContainer extends StatelessWidget {
         }
 
         return Container(
-          decoration: BoxDecoration(
-            boxShadow: getPlatform() == PlatformOS.isIOS &&
-                    forceAndroidBubbleDesign == false
-                ? []
-                : boxShadowCheck(boxShadowGeneral(context)),
-          ),
+          decoration: getPlatform() == PlatformOS.isIOS && forceAndroidBubbleDesign == false
+              ? null
+              : DesignSystem.effects.glassCard.copyWith(borderRadius: BorderRadius.circular(24)),
           child: OpenContainerNavigation(
             openPage: ObjectivePage(objectivePk: objective.objectivePk),
             borderRadius: borderRadius,
@@ -761,11 +759,11 @@ class ObjectiveContainerDifferenceLoan extends StatelessWidget {
             (getPlatform() == PlatformOS.isIOS &&
                 forceAndroidBubbleDesign == false)
         ? 0
-        : 20;
+        : 24;
     Color containerColor =
         getPlatform() == PlatformOS.isIOS && forceAndroidBubbleDesign == false
             ? Theme.of(context).colorScheme.background
-            : getColor(context, "lightDarkAccentHeavyLight");
+            : Colors.transparent;
     Widget child = WatchTotalAndAmountOfObjective(
       objective: objective,
       builder: (objectiveAmount, totalAmount, percentageTowardsGoal) {
@@ -777,13 +775,11 @@ class ObjectiveContainerDifferenceLoan extends StatelessWidget {
           totalAmount: totalAmount,
         );
         return Container(
-          decoration: BoxDecoration(
-            boxShadow: rowEntry ||
-                    (getPlatform() == PlatformOS.isIOS &&
-                        forceAndroidBubbleDesign == false)
-                ? []
-                : boxShadowCheck(boxShadowGeneral(context)),
-          ),
+          decoration: rowEntry ||
+                  (getPlatform() == PlatformOS.isIOS &&
+                      forceAndroidBubbleDesign == false)
+              ? null
+              : DesignSystem.effects.glassCard.copyWith(borderRadius: BorderRadius.circular(24)),
           child: OpenContainerNavigation(
             openPage: ObjectivePage(objectivePk: objective.objectivePk),
             borderRadius: borderRadius,

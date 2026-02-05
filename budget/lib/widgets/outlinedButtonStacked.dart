@@ -2,6 +2,8 @@ import 'package:budget/colors.dart';
 import 'package:budget/functions.dart';
 import 'package:budget/struct/settings.dart';
 import 'package:budget/widgets/settingsContainers.dart';
+import 'package:budget/database/tables.dart';
+import 'package:budget/struct/design_system.dart';
 import 'package:budget/widgets/tappable.dart';
 import 'package:budget/widgets/textWidgets.dart';
 import 'package:flutter/material.dart';
@@ -165,17 +167,16 @@ class OutlinedContainer extends StatelessWidget {
         borderRadius ?? (getPlatform() == PlatformOS.isIOS ? 10 : 15);
     return AnimatedContainer(
       duration: Duration(milliseconds: 250),
-      decoration: BoxDecoration(
+      decoration: DesignSystem.effects.glassCard.copyWith(
+        color: filled == true
+            ? Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5)
+            : null,
         border: Border.all(
-          color: borderColor ??
-              (appStateSettings["materialYou"]
-                  ? Theme.of(context).colorScheme.secondary.withOpacity(0.5)
-                  : getColor(context, "lightDarkAccentHeavy")),
+          color: enabled
+              ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+              : Colors.transparent,
           width: 2,
         ),
-        color: filled == true
-            ? Theme.of(context).colorScheme.secondary.withOpacity(0.2)
-            : Colors.transparent,
         borderRadius: BorderRadiusDirectional.circular(borderRadiusValue),
       ),
       child: clip

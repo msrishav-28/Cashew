@@ -269,6 +269,10 @@ class NavigationSidebarState extends State<NavigationSidebar> {
                                 currentPageIndex: selectedIndex,
                               ),
                               NavigationSidebarButtonWithNavBarIconData(
+                                navBarIconDataKey: "groups",
+                                currentPageIndex: selectedIndex,
+                              ),
+                              NavigationSidebarButtonWithNavBarIconData(
                                 navBarIconDataKey: "goals",
                                 currentPageIndex: selectedIndex,
                               ),

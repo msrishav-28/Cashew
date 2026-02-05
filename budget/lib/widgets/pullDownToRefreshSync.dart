@@ -3,6 +3,7 @@ import 'package:budget/functions.dart';
 import 'package:budget/struct/settings.dart';
 import 'package:budget/widgets/accountAndBackup.dart';
 import 'package:budget/widgets/navigationFramework.dart';
+import 'package:budget/controllers/syncController.dart';
 import 'package:budget/widgets/navigationSidebar.dart';
 import 'package:budget/widgets/transactionEntry/swipeToSelectTransactions.dart';
 import 'package:budget/widgets/textWidgets.dart';
@@ -190,24 +191,31 @@ class _PullDownToRefreshSyncState extends State<PullDownToRefreshSync>
                         : dynamicPastel(
                             context, getColor(context, "lightDarkAccent"),
                             amountLight: 0.1, amountDark: 0.3),
-                    child: TimerBuilder.periodic(
-                      Duration(seconds: 5),
-                      builder: (context) {
-                        DateTime? dateTimeLastSynced = getTimeLastSynced();
-                        return Center(
-                          child: TextFont(
-                            textAlign: TextAlign.center,
-                            textColor: getColor(context, "textLight"),
-                            fontSize: 13,
-                            maxLines: 3,
-                            text: "synced".tr().capitalizeFirst +
-                                " " +
-                                (dateTimeLastSynced == null
-                                    ? "never".tr()
-                                    : getTimeAgo(dateTimeLastSynced)),
-                          ),
+                    child: ValueListenableBuilder(
+                      valueListenable: SyncController().isSyncing,
+                      builder: (context, isSyncing, child) {
+                        return TimerBuilder.periodic(
+                          Duration(seconds: 5),
+                          builder: (context) {
+                            DateTime? dateTimeLastSynced = getTimeLastSynced();
+                            return Center(
+                              child: TextFont(
+                                textAlign: TextAlign.center,
+                                textColor: getColor(context, "textLight"),
+                                fontSize: 13,
+                                maxLines: 3,
+                                text: isSyncing
+                                    ? "Syncing...".tr()
+                                    : "synced".tr().capitalizeFirst +
+                                        " " +
+                                        (dateTimeLastSynced == null
+                                            ? "never".tr()
+                                            : getTimeAgo(dateTimeLastSynced)),
+                              ),
+                            );
+                          },
                         );
-                      },
+                      }
                     ),
                   ),
                   Transform.scale(

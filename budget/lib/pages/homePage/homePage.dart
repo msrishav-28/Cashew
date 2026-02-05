@@ -1,4 +1,5 @@
 import 'package:budget/colors.dart';
+import 'package:budget/struct/design_system.dart';
 import 'package:budget/database/generatePreviewData.dart';
 import 'package:budget/database/tables.dart';
 import 'package:budget/functions.dart';
@@ -252,6 +253,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
             AndroidOnly(child: RenderHomePageWidgets()),
             Scaffold(
               resizeToAvoidBottomInset: false,
+              backgroundColor: Colors.transparent, // Allow Mesh Gradient to show through
               body: ScrollbarWrap(
                 scrollController: _scrollController,
                 child: ListView(
@@ -471,21 +473,20 @@ class _HomePageRatingBoxState extends State<HomePageRatingBox> {
                 padding: EdgeInsetsDirectional.only(
                     start: 15, end: 15, bottom: 18, top: 18),
                 margin: EdgeInsetsDirectional.symmetric(horizontal: 13),
-                decoration: BoxDecoration(
-                  borderRadius:
-                      BorderRadiusDirectional.all(Radius.circular(15)),
-                  color: getColor(context, "lightDarkAccentHeavyLight"),
-                  boxShadow: boxShadowCheck(boxShadowGeneral(context)),
+                decoration: DesignSystem.effects.glassCard.copyWith(
+                  color: DesignSystem.colors.glassModal,
+                  borderRadius: DesignSystem.dimensions.borderRadiusM,
                 ),
                 child: Column(
                   children: [
-                    TextFont(
-                      text: "enjoying-cashew-question".tr(),
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      textAlign: TextAlign.center,
-                      maxLines: 3,
-                    ),
+                      TextFont(
+                        text: "enjoying-cashew-question".tr(),
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        textAlign: TextAlign.center,
+                        textColor: DesignSystem.colors.textPrimary,
+                        maxLines: 3,
+                      ),
                     SizedBox(height: 7),
                     Padding(
                       padding:

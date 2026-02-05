@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:budget/functions.dart';
 import 'package:budget/struct/settings.dart';
+import 'package:budget/struct/design_system.dart';
 import 'package:budget/widgets/animatedExpanded.dart';
 import 'package:budget/widgets/button.dart';
 import 'package:budget/widgets/navigationSidebar.dart';
@@ -479,9 +480,18 @@ class PageFrameworkState extends State<PageFramework>
         ? [...slivers, ...listWidgets]
         : [...listWidgets, ...slivers];
 
-    Widget scaffold = Scaffold(
-      resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-      backgroundColor: widget.backgroundColor,
+    Widget scaffold = Stack(
+      children: [
+        // GLOBAL BACKGROUND: Mesh Gradient
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: DesignSystem.effects.meshGradient,
+        ),
+        Scaffold(
+          resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+          backgroundColor: Colors.transparent, // Force transparent to show mesh
+
       body: widget.bodyBuilder != null
           ? widget.bodyBuilder!(
               _scrollController,
@@ -521,6 +531,9 @@ class PageFrameworkState extends State<PageFramework>
                 if (widget.overlay != null) widget.overlay ?? SizedBox.shrink(),
               ],
             ),
+            ),
+        ),
+      ],
     );
     Widget? dragDownToDismissScaffold = null;
     if (widget.dragDownToDismiss) {
@@ -1249,10 +1262,11 @@ class BlurBehindAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (getPlatform() != PlatformOS.isIOS) return child;
+    // Enable Glass Blur on ALL platforms for Platinum Feel
+    // if (getPlatform() != PlatformOS.isIOS) return child; 
     return ClipRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20), // Standardize blur
         child: child,
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:budget/database/tables.dart';
+import 'package:budget/struct/design_system.dart';
 import 'package:budget/functions.dart';
 import 'package:budget/pages/addWalletPage.dart';
 import 'package:budget/pages/homePage/homePageWalletSwitcher.dart';
@@ -31,9 +32,8 @@ class WalletEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsetsDirectional.only(start: 6, end: 6),
-      decoration: BoxDecoration(
+      decoration: DesignSystem.effects.glassCard.copyWith(
         borderRadius: BorderRadiusDirectional.circular(15),
-        boxShadow: boxShadowCheck(boxShadowGeneral(context)),
       ),
       child: OpenContainerNavigation(
         borderRadius: 15,

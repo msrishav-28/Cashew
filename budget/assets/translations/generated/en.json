@@ -1180,5 +1180,15 @@
   "import-warning": "Import Warning",
   "import-warning-description": "Import may fail! Please make sure you have selected a valid Cashew [.sqlite] or [.sql] backup file",
   "duplicate-budget-question": "Duplicate Budget?",
-  "duplicate-budget": "Duplicate Budget"
+  "duplicate-budget": "Duplicate Budget",
+  "split-equally": "Equally",
+  "split-by-percentage": "By Percentage",
+  "split-by-shares": "By Shares",
+  "split-unequally": "Unequally",
+  "groups": "Groups",
+  "add-expense": "Add Expense",
+  "group-balance": "Balance",
+  "settle-up": "Settle Up",
+  "you-are-owed": "You are owed",
+  "you-owe-amount": "You owe"
 }

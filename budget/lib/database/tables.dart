@@ -4,14 +4,13 @@ import 'package:budget/pages/homePage/homePageLineGraph.dart';
 import 'package:budget/pages/objectivesListPage.dart';
 import 'package:budget/pages/transactionFilters.dart';
 import 'package:budget/struct/databaseGlobal.dart';
-import 'package:budget/struct/firebaseAuthGlobal.dart';
+import 'package:budget/database/supabase_manager.dart';
+import 'package:budget/struct/supabaseGlobal.dart';
 import 'package:budget/struct/settings.dart';
 import 'package:budget/struct/shareBudget.dart';
-import 'package:budget/struct/syncClient.dart';
 import 'package:budget/widgets/navigationFramework.dart';
 import 'package:budget/widgets/periodCyclePicker.dart';
 import 'package:budget/widgets/walletEntry.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import 'package:async/async.dart';
 import 'package:drift/drift.dart';
@@ -26,7 +25,7 @@ import 'package:budget/pages/activityPage.dart';
 import 'package:flutter/material.dart' show RangeValues;
 part 'tables.g.dart';
 
-int schemaVersionGlobal = 46;
+int schemaVersionGlobal = 48;
 
 // To update and migrate the database, check the README
 
@@ -361,7 +360,7 @@ class Categories extends Table {
       .nullable()();
 
   // Attributes to configure sharing of transactions:
-  // sharedKey will have the key referencing the entry in the firebase database, if this is null, it is not shared
+  // sharedKey will have the key referencing the entry in the supabase database, if this is null, it is not shared
   // TextColumn get sharedKey => text().nullable()();
   // IntColumn get sharedOwnerMember => intEnum<SharedOwnerMember>().nullable()();
   // DateTimeColumn get sharedDateUpdated => dateTime().nullable()();
@@ -459,7 +458,7 @@ class Budgets extends Table {
       .withDefault(const Constant(null))
       .map(const StringListInColumnConverter())();
   // Attributes to configure sharing of transactions:
-  // sharedKey will have the key referencing the entry in the firebase database, if this is null, it is not shared
+  // sharedKey will have the key referencing the entry in the supabase database, if this is null, it is not shared
   TextColumn get sharedKey => text().nullable()();
   IntColumn get sharedOwnerMember => intEnum<SharedOwnerMember>().nullable()();
   DateTimeColumn get sharedDateUpdated => dateTime().nullable()();
@@ -536,6 +535,123 @@ class Objectives extends Table {
 
   @override
   Set<Column> get primaryKey => {objectivePk};
+}
+
+@DataClassName('GroupEntry')
+class Groups extends Table {
+  TextColumn get groupPk => text().clientDefault(() => uuid.v4())();
+  TextColumn get name => text().withLength(max: NAME_LIMIT)();
+  TextColumn get description => text().withLength(max: NOTE_LIMIT).nullable()();
+  TextColumn get imageUrl => text().nullable()();
+  TextColumn get createdBy => text().withLength(max: NAME_LIMIT)();
+  DateTimeColumn get dateCreated =>
+      dateTime().clientDefault(() => DateTime.now())();
+  DateTimeColumn get dateTimeModified =>
+      dateTime().withDefault(Constant(DateTime.now())).nullable()();
+  BoolColumn get archived => boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column> get primaryKey => {groupPk};
+}
+
+@DataClassName('GroupMemberEntry')
+class GroupMembers extends Table {
+  TextColumn get memberPk => text().clientDefault(() => uuid.v4())();
+  TextColumn get groupFk => text().references(Groups, #groupPk)();
+  TextColumn get userEmail => text().withLength(max: NAME_LIMIT)();
+  TextColumn get userName => text().withLength(max: NAME_LIMIT)();
+  TextColumn get userPhotoUrl => text().nullable()();
+  DateTimeColumn get dateJoined =>
+      dateTime().clientDefault(() => DateTime.now())();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+
+  @override
+  Set<Column> get primaryKey => {memberPk};
+}
+
+@DataClassName('SharedExpenseEntry')
+class SharedExpenses extends Table {
+  TextColumn get expensePk => text().clientDefault(() => uuid.v4())();
+  TextColumn get groupFk => text().references(Groups, #groupPk)();
+  TextColumn get title => text().withLength(max: NAME_LIMIT)();
+  TextColumn get description => text().withLength(max: NOTE_LIMIT).nullable()();
+  RealColumn get amount => real()();
+  TextColumn get currency => text().withLength(max: NAME_LIMIT)();
+  TextColumn get categoryFk => text().references(Categories, #categoryPk).nullable()();
+  TextColumn get paidBy => text().withLength(max: NAME_LIMIT)();
+  DateTimeColumn get dateCreated =>
+      dateTime().clientDefault(() => DateTime.now())();
+  DateTimeColumn get dateTimeModified =>
+      dateTime().withDefault(Constant(DateTime.now())).nullable()();
+  TextColumn get imageUrl => text().nullable()();
+  BoolColumn get isSettled => boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column> get primaryKey => {expensePk};
+}
+
+@DataClassName('ExpenseSplitEntry')
+class ExpenseSplits extends Table {
+  TextColumn get splitPk => text().clientDefault(() => uuid.v4())();
+  TextColumn get expenseFk =>
+      text().references(SharedExpenses, #expensePk)();
+  TextColumn get userEmail => text().withLength(max: NAME_LIMIT)();
+  RealColumn get shareAmount => real()();
+  RealColumn get paidAmount => real().withDefault(const Constant(0.0))();
+  BoolColumn get isPaid => boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column> get primaryKey => {splitPk};
+}
+
+@DataClassName('GroupBalanceEntry')
+class GroupBalances extends Table {
+  TextColumn get balancePk => text().clientDefault(() => uuid.v4())();
+  TextColumn get groupFk => text().references(Groups, #groupPk)();
+  TextColumn get fromUserEmail => text().withLength(max: NAME_LIMIT)();
+  TextColumn get toUserEmail => text().withLength(max: NAME_LIMIT)();
+  RealColumn get amount => real()();
+  TextColumn get currency => text().withLength(max: NAME_LIMIT)();
+  DateTimeColumn get lastUpdated =>
+      dateTime().clientDefault(() => DateTime.now())();
+
+  @override
+  Set<Column> get primaryKey => {balancePk};
+}
+
+@DataClassName('SettlementEntry')
+class Settlements extends Table {
+  TextColumn get settlementPk => text().clientDefault(() => uuid.v4())();
+  TextColumn get groupFk => text().references(Groups, #groupPk)();
+  TextColumn get fromUserEmail => text().withLength(max: NAME_LIMIT)();
+  TextColumn get toUserEmail => text().withLength(max: NAME_LIMIT)();
+  RealColumn get amount => real()();
+  TextColumn get currency => text().withLength(max: NAME_LIMIT)();
+  TextColumn get paymentMethod => text().nullable()();
+  TextColumn get notes => text().withLength(max: NOTE_LIMIT).nullable()();
+  DateTimeColumn get dateCreated =>
+      dateTime().clientDefault(() => DateTime.now())();
+
+  @override
+  Set<Column> get primaryKey => {settlementPk};
+}
+
+@DataClassName('GroupActivityEntry')
+class GroupActivity extends Table {
+  TextColumn get activityPk => text().clientDefault(() => uuid.v4())();
+  TextColumn get groupFk => text().references(Groups, #groupPk)();
+  TextColumn get activityType => text().withLength(max: NAME_LIMIT)();
+  TextColumn get performedBy => text().withLength(max: NAME_LIMIT)();
+  TextColumn get description => text().withLength(max: NOTE_LIMIT)();
+  TextColumn get relatedExpenseFk =>
+      text().references(SharedExpenses, #expensePk).nullable()();
+  TextColumn get relatedSettlementFk =>
+      text().references(Settlements, #settlementPk).nullable()();
+  DateTimeColumn get dateCreated =>
+      dateTime().clientDefault(() => DateTime.now())();
+
+  @override
+  Set<Column> get primaryKey => {activityPk};
 }
 
 class TransactionWithCategory {
@@ -678,16 +794,22 @@ class CategoryWithTotal {
 // Modify syncData to process the newly created!
 @DriftDatabase(tables: [
   Wallets,
-  Transactions,
   Categories,
-  CategoryBudgetLimits,
-  // Labels,
-  AssociatedTitles,
+  Transactions,
   Budgets,
+  CategoryBudgetLimits,
+  AssociatedTitles,
   AppSettings,
   ScannerTemplates,
   DeleteLogs,
   Objectives,
+  Groups,
+  GroupMembers,
+  SharedExpenses,
+  ExpenseSplits,
+  GroupBalances,
+  Settlements,
+  GroupActivity,
 ])
 class FinanceDatabase extends _$FinanceDatabase {
   // FinanceDatabase() : super(_openConnection());
@@ -4232,25 +4354,9 @@ class FinanceDatabase extends _$FinanceDatabase {
       updateSharedEntry = false;
 
     budget = budget.copyWith(name: budget.name.trim());
-    // print(budget);
 
-    if (budget.sharedKey != null && updateSharedEntry == true) {
-      FirebaseFirestore? db = await firebaseGetDBInstance();
-      if (db == null) {
-        return -1;
-      }
-      DocumentReference collectionRef =
-          db.collection('budgets').doc(budget.sharedKey);
-      collectionRef.update({
-        "name": budget.name,
-        "amount": budget.amount,
-        "colour": budget.colour,
-        "startDate": budget.startDate,
-        "endDate": budget.endDate,
-        "periodLength": budget.periodLength,
-        "reoccurrence": enumRecurrence[budget.reoccurrence],
-      });
-    }
+    // Legacy Firebase shared budget sync removed - now handled by Supabase Groups
+    // if (budget.sharedKey != null) { ... } block removed
 
     budget = budget.copyWith(dateTimeModified: Value(DateTime.now()));
     BudgetsCompanion companionToInsert = budget.toCompanion(true);

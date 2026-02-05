@@ -3,6 +3,7 @@ import 'package:budget/functions.dart';
 import 'package:budget/pages/addTransactionPage.dart';
 import 'package:budget/struct/defaultPreferences.dart';
 import 'package:budget/struct/settings.dart';
+import 'package:budget/struct/design_system.dart';
 import 'package:budget/widgets/tappable.dart';
 import 'package:budget/widgets/textWidgets.dart';
 import 'package:flutter/material.dart';
@@ -81,11 +82,7 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
     Widget text = TextFont(
       text: widget.label,
       fontSize: widget.fontSize,
-      textColor: widget.textColor ??
-          (appStateSettings["materialYou"]
-              ? dynamicPastel(context, Theme.of(context).colorScheme.onPrimary,
-                  amount: 0.2)
-              : Theme.of(context).colorScheme.onSecondaryContainer),
+      textColor: widget.textColor ?? DesignSystem.colors.textPrimary,
       maxLines: 5,
       textAlign: widget.icon != null ? TextAlign.start : TextAlign.center,
     );
@@ -141,6 +138,12 @@ class _ButtonState extends State<Button> with TickerProviderStateMixin {
             child: Container(
               width: widget.width,
               // height: widget.height,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(widget.borderRadius ?? 20),
+                boxShadow: widget.color == DesignSystem.colors.primary 
+                    ? DesignSystem.effects.neonGlow 
+                    : [],
+              ),
               padding: widget.padding,
               child: Center(
                 child: Row(

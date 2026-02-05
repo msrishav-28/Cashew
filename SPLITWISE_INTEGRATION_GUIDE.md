@@ -1,9 +1,30 @@
 # Splitwise Integration Guide for Cashew Web/PWA
 
-> **Version:** 1.0  
+> **Version:** 2.0  
 > **Target Platform:** Web/PWA (Progressive Web App)  
-> **Last Updated:** February 3, 2026  
+> **Last Updated:** February 5, 2026  
 > **Author:** msrishav-28
+
+> [!CAUTION]
+> ## ⚠️ IMPORTANT: Backend Migration Complete
+> This guide was originally written for **Firebase** integration. The actual implementation uses **Supabase** instead.
+> 
+> **Key Differences:**
+> | Original Plan | Actual Implementation |
+> |--------------|----------------------|
+> | Firebase Firestore | Supabase PostgreSQL |
+> | Firebase Auth | Supabase Auth |
+> | Firebase Hosting | Vercel |
+> | Firebase Security Rules | Row Level Security (RLS) |
+> | `firebase deploy` | `vercel deploy` |
+> 
+> **Relevant Files:**
+> - Schema: [`FINAL_SUPABASE_SCHEMA.sql`](./FINAL_SUPABASE_SCHEMA.sql)
+> - Manager: [`lib/database/supabase_manager.dart`](./budget/lib/database/supabase_manager.dart)
+> - Groups API: [`lib/database/supabase_groups.dart`](./budget/lib/database/supabase_groups.dart)
+> - Sync Controller: [`lib/controllers/syncController.dart`](./budget/lib/controllers/syncController.dart)
+
+---
 
 ## 📋 Table of Contents
 
@@ -29,7 +50,7 @@ This guide outlines the complete integration of Splitwise functionality into Cas
 - **Faster iteration** - No APK builds, instant browser testing
 - **Easier debugging** - Browser DevTools
 - **Database works out of box** - Drift WASM already configured
-- **Simple deployment** - Firebase Hosting with `firebase deploy`
+- **Simple deployment** - Vercel with `vercel deploy` (originally Firebase Hosting)
 - **Instant sharing** - Send URL to testers, no APK installation
 
 ### Project Goals
@@ -37,7 +58,7 @@ This guide outlines the complete integration of Splitwise functionality into Cas
 - ✅ Maintain all existing Cashew personal budget features
 - ✅ Add complete Splitwise group expense splitting
 - ✅ Ensure seamless UI/UX integration
-- ✅ Support multi-user real-time sync via Firebase
+- ✅ Support multi-user real-time sync via **Supabase** (migrated from Firebase)
 - ✅ Keep GPL-3.0 open source license
 
 ---

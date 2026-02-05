@@ -248,7 +248,7 @@ Color dynamicPastel(
 }
 
 class HexColor extends Color {
-  static int _getColorFromHex(String? hexColor, Color? defaultColor, context) {
+  static int _getColorFromHex(String? hexColor, Color? defaultColor) {
     try {
       if (hexColor == null) {
         if (defaultColor == null) {
@@ -269,7 +269,7 @@ class HexColor extends Color {
   }
 
   HexColor(final String? hexColor, {final Color? defaultColor})
-      : super(_getColorFromHex(hexColor, defaultColor, context));
+      : super(_getColorFromHex(hexColor, defaultColor));
 }
 
 String? toHexString(Color? color) {

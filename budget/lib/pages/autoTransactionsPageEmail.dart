@@ -25,7 +25,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:budget/functions.dart';
-import 'package:googleapis/gmail/v1.dart' as gMail;
+
 import 'package:html/parser.dart';
 import 'package:notification_listener_service/notification_event.dart';
 import 'package:notification_listener_service/notification_listener_service.dart';
@@ -310,13 +310,7 @@ class _AutoTransactionsPageEmailState extends State<AutoTransactionsPageEmail> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      if (canReadEmails == true && googleUser == null) {
-        await signInGoogle(
-            context: context, waitForCompletion: true, gMailPermissions: true);
-        updateSettings("AutoTransactions-canReadEmails", true,
-            pagesNeedingRefresh: [3], updateGlobalState: false);
-        setState(() {});
-      }
+       // TODO: Implement Supabase or similar for email reading if possible
     });
   }
 
@@ -346,26 +340,8 @@ class _AutoTransactionsPageEmailState extends State<AutoTransactionsPageEmail> {
         ),
         SettingsContainerSwitch(
           onSwitched: (value) async {
-            if (value == true) {
-              bool result = await signInGoogle(
-                  context: context,
-                  waitForCompletion: true,
-                  gMailPermissions: true);
-              if (result == false) {
-                return false;
-              }
-              setState(() {
-                canReadEmails = true;
-              });
-              updateSettings("AutoTransactions-canReadEmails", true,
-                  pagesNeedingRefresh: [3], updateGlobalState: false);
-            } else {
-              setState(() {
-                canReadEmails = false;
-              });
-              updateSettings("AutoTransactions-canReadEmails", false,
-                  updateGlobalState: false, pagesNeedingRefresh: [3]);
-            }
+             openSnackbar(SnackbarMessage(title: "Feature temporarily disabled"));
+             return false;
           },
           title: "Read Emails",
           description:
@@ -390,223 +366,7 @@ class _AutoTransactionsPageEmailState extends State<AutoTransactionsPageEmail> {
 
 Future<void> parseEmailsInBackground(context,
     {bool sayUpdates = false, bool forceParse = false}) async {
-  if (appStateSettings["hasSignedIn"] == false) return;
-  if (errorSigningInDuringCloud == true) return;
-  if (appStateSettings["emailScanning"] == false) return;
-  // Prevent sign-in on web - background sign-in cannot access Google Drive etc.
-  if (kIsWeb && !entireAppLoaded) return;
-  // print(entireAppLoaded);
-  //Only run this once, don't run again if the global state changes (e.g. when changing a setting)
-  if (entireAppLoaded == false || forceParse) {
-    if (appStateSettings["AutoTransactions-canReadEmails"] == true) {
-      List<Transaction> transactionsToAdd = [];
-      Stopwatch stopwatch = new Stopwatch()..start();
-      print("Scanning emails");
-
-      bool hasSignedIn = false;
-      if (googleUser == null) {
-        hasSignedIn = await signInGoogle(
-            context: context,
-            gMailPermissions: true,
-            waitForCompletion: false,
-            silentSignIn: true);
-      } else {
-        hasSignedIn = true;
-      }
-      if (hasSignedIn == false) {
-        return;
-      }
-
-      List<dynamic> emailsParsed =
-          appStateSettings["EmailAutoTransactions-emailsParsed"] ?? [];
-      int amountOfEmails =
-          appStateSettings["EmailAutoTransactions-amountOfEmails"] ?? 10;
-      int newEmailCount = 0;
-
-      final authHeaders = await googleUser!.authHeaders;
-      final authenticateClient = GoogleAuthClient(authHeaders);
-      gMail.GmailApi gmailApi = gMail.GmailApi(authenticateClient);
-      gMail.ListMessagesResponse results = await gmailApi.users.messages
-          .list(googleUser!.id.toString(), maxResults: amountOfEmails);
-
-      int currentEmailIndex = 0;
-
-      List<ScannerTemplate> scannerTemplates =
-          await database.getAllScannerTemplates();
-      if (scannerTemplates.length <= 0) {
-        openSnackbar(
-          SnackbarMessage(
-            title:
-                "You have not setup the email scanning configuration in settings.",
-            onTap: () {
-              pushRoute(
-                context,
-                AutoTransactionsPageEmail(),
-              );
-            },
-          ),
-        );
-      }
-      for (gMail.Message message in results.messages!) {
-        currentEmailIndex++;
-        loadingProgressKey.currentState
-            ?.setProgressPercentage(currentEmailIndex / amountOfEmails);
-        // await Future.delayed(Duration(milliseconds: 1000));
-
-        // Remove this to always parse emails
-        if (emailsParsed.contains(message.id!)) {
-          print("Already checked this email!");
-          continue;
-        }
-        newEmailCount++;
-
-        gMail.Message messageData = await gmailApi.users.messages
-            .get(googleUser!.id.toString(), message.id!);
-        DateTime messageDate = DateTime.fromMillisecondsSinceEpoch(
-            int.parse(messageData.internalDate ?? ""));
-        String messageString = getEmailMessage(messageData);
-        print("Adding transaction based on email");
-
-        String? title;
-        double? amountDouble;
-
-        bool doesEmailContain = false;
-        ScannerTemplate? templateFound;
-        for (ScannerTemplate scannerTemplate in scannerTemplates) {
-          if (messageString.contains(scannerTemplate.contains)) {
-            doesEmailContain = true;
-            templateFound = scannerTemplate;
-            title = getTransactionTitleFromEmail(
-              messageString,
-              scannerTemplate.titleTransactionBefore,
-              scannerTemplate.titleTransactionAfter,
-            );
-            amountDouble = getTransactionAmountFromEmail(
-              messageString,
-              scannerTemplate.amountTransactionBefore,
-              scannerTemplate.amountTransactionAfter,
-            );
-            break;
-          }
-        }
-
-        if (doesEmailContain == false) {
-          emailsParsed.insert(0, message.id!);
-          continue;
-        }
-
-        if (title == null) {
-          openSnackbar(
-            SnackbarMessage(
-              title:
-                  "Couldn't find title in email. Check the email settings page for more information.",
-              onTap: () {
-                pushRoute(
-                  context,
-                  AutoTransactionsPageEmail(),
-                );
-              },
-            ),
-          );
-          emailsParsed.insert(0, message.id!);
-          continue;
-        } else if (amountDouble == null) {
-          openSnackbar(
-            SnackbarMessage(
-              title:
-                  "Couldn't find amount in email. Check the email settings page for more information.",
-              onTap: () {
-                pushRoute(
-                  context,
-                  AutoTransactionsPageEmail(),
-                );
-              },
-            ),
-          );
-
-          emailsParsed.insert(0, message.id!);
-          continue;
-        }
-
-        TransactionAssociatedTitleWithCategory? foundTitle =
-            (await database.getSimilarAssociatedTitles(title: title, limit: 1))
-                .firstOrNull;
-
-        TransactionCategory? selectedCategory = foundTitle?.category;
-        if (selectedCategory == null) continue;
-
-        title = filterEmailTitle(title);
-
-        await addAssociatedTitles(title, selectedCategory);
-
-        Transaction transactionToAdd = Transaction(
-          transactionPk: "-1",
-          name: title,
-          amount: (amountDouble).abs() * (selectedCategory.income ? 1 : -1),
-          note: "",
-          categoryFk: selectedCategory.categoryPk,
-          walletFk: appStateSettings["selectedWalletPk"],
-          dateCreated: messageDate,
-          dateTimeModified: null,
-          income: selectedCategory.income,
-          paid: true,
-          skipPaid: false,
-          methodAdded: MethodAdded.email,
-        );
-        transactionsToAdd.add(transactionToAdd);
-        openSnackbar(
-          SnackbarMessage(
-            title: templateFound!.templateName + ": " + "From Email",
-            description: title,
-            icon: appStateSettings["outlinedIcons"]
-                ? Icons.payments_outlined
-                : Icons.payments_rounded,
-          ),
-        );
-        // TODO have setting so they can choose if the emails are markes as read
-        gmailApi.users.messages.modify(
-          gMail.ModifyMessageRequest(removeLabelIds: ["UNREAD"]),
-          googleUser!.id,
-          message.id!,
-        );
-
-        emailsParsed.insert(0, message.id!);
-      }
-      // wait for intro animation to finish
-      if (Duration(milliseconds: 2500) > stopwatch.elapsed) {
-        print("waited extra" +
-            (Duration(milliseconds: 2500) - stopwatch.elapsed).toString());
-        await Future.delayed(
-            Duration(milliseconds: 2500) - stopwatch.elapsed, () {});
-      }
-      for (Transaction transaction in transactionsToAdd) {
-        await database.createOrUpdateTransaction(insert: true, transaction);
-      }
-      List<dynamic> emails = [
-        ...emailsParsed
-            .take(appStateSettings["EmailAutoTransactions-amountOfEmails"] + 10)
-      ];
-      updateSettings(
-        "EmailAutoTransactions-emailsParsed",
-        emails, // Keep 10 extra in case maybe the user deleted some emails recently
-        updateGlobalState: false,
-      );
-      if (newEmailCount > 0 || sayUpdates == true)
-        openSnackbar(
-          SnackbarMessage(
-            title: "Scanned " + results.messages!.length.toString() + " emails",
-            description: newEmailCount.toString() +
-                pluralString(newEmailCount == 1, " new email"),
-            icon: appStateSettings["outlinedIcons"]
-                ? Icons.mark_email_unread_outlined
-                : Icons.mark_email_unread_rounded,
-            onTap: () {
-              pushRoute(context, AutoTransactionsPageEmail());
-            },
-          ),
-        );
-    }
-  }
+  print("Email scanning temporarily disabled during migration.");
 }
 
 String? getTransactionTitleFromEmail(String messageString,
@@ -649,7 +409,7 @@ class _GmailApiScreenState extends State<GmailApiScreen> {
   int amountOfEmails =
       appStateSettings["EmailAutoTransactions-amountOfEmails"] ?? 10;
 
-  late gMail.GmailApi gmailApi;
+
   List<String> messagesList = [];
 
   @override
@@ -658,44 +418,8 @@ class _GmailApiScreenState extends State<GmailApiScreen> {
   }
 
   init() async {
-    loading = true;
-    if (googleUser != null) {
-      try {
-        final authHeaders = await googleUser!.authHeaders;
-        final authenticateClient = GoogleAuthClient(authHeaders);
-        gMail.GmailApi gmailApi = gMail.GmailApi(authenticateClient);
-        gMail.ListMessagesResponse results = await gmailApi.users.messages
-            .list(googleUser!.id.toString(), maxResults: amountOfEmails);
-        setState(() {
-          loaded = true;
-          error = "";
-        });
-        int currentEmailIndex = 0;
-        for (gMail.Message message in results.messages!) {
-          gMail.Message messageData = await gmailApi.users.messages
-              .get(googleUser!.id.toString(), message.id!);
-          // print(DateTime.fromMillisecondsSinceEpoch(
-          //     int.parse(messageData.internalDate ?? "")));
-          String emailMessageString = getEmailMessage(messageData);
-          messagesList.add(emailMessageString);
-          currentEmailIndex++;
-          loadingProgressKey.currentState
-              ?.setProgressPercentage(currentEmailIndex / amountOfEmails);
-          if (mounted) {
-            setState(() {});
-          } else {
-            loadingProgressKey.currentState?.setProgressPercentage(0);
-            break;
-          }
-        }
-      } catch (e) {
-        setState(() {
-          loaded = true;
-          error = e.toString();
-        });
-      }
-    }
     loading = false;
+    loaded = true;
   }
 
   @override

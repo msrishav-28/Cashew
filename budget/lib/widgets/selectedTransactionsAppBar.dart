@@ -4,6 +4,7 @@ import 'package:budget/pages/addTransactionPage.dart';
 import 'package:budget/pages/editBudgetPage.dart';
 import 'package:budget/pages/editObjectivesPage.dart';
 import 'package:budget/pages/editWalletsPage.dart';
+import 'package:budget/pages/groups/widgets/convertTransactionsSheet.dart';
 import 'package:budget/struct/currencyFunctions.dart';
 import 'package:budget/struct/databaseGlobal.dart';
 import 'package:budget/struct/listenableSelector.dart';
@@ -306,6 +307,40 @@ class SelectedTransactionsAppBarMenu extends StatelessWidget {
     globalSelectedID.notifyListeners();
   }
 
+  Future<void> _convertToShared(BuildContext context) async {
+    if (selectedTransactionPks.isEmpty) return;
+    final hasGroup = await (database.select(database.groups)..limit(1)).get();
+    if (hasGroup.isEmpty) {
+      openSnackbar(
+        SnackbarMessage(
+          icon: Icons.groups_outlined,
+          title: 'Create a group first',
+          description: 'Add a group to convert transactions into shared expenses.',
+        ),
+      );
+      return;
+    }
+    final converted = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => FractionallySizedBox(
+        heightFactor: 0.92,
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: ConvertTransactionsToSharedSheet(
+              transactionPks: selectedTransactionPks,
+            ),
+          ),
+        ),
+      ),
+    );
+    if (converted == true) {
+      globalSelectedID.value[pageID] = [];
+      globalSelectedID.notifyListeners();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Objective>>(
@@ -415,6 +450,12 @@ class SelectedTransactionsAppBarMenu extends StatelessWidget {
                           globalSelectedID.notifyListeners();
                         },
                       ),
+                    DropdownItemMenu(
+                      id: "convert-shared",
+                      label: 'Convert to shared expense',
+                      icon: Icons.groups_2_outlined,
+                      action: () => _convertToShared(context),
+                    ),
                     if (enableDuplicate)
                       DropdownItemMenu(
                         id: "create-copy",

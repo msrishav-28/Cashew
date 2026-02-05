@@ -8,6 +8,13 @@
     "description": "A budget and financial tracking application designed for you",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "scope": "/",
+    "dir": "ltr",
+    "categories": [
+        "finance",
+        "productivity",
+        "utilities"
+    ],
     "icons": [
         {
             "src": "icons/Icon-192.png",

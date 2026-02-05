@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:budget/functions.dart';
 import 'package:budget/pages/addTransactionPage.dart';
-import 'package:budget/struct/firebaseAuthGlobal.dart';
+import 'package:budget/database/supabase_manager.dart';
 import 'package:budget/struct/languageMap.dart';
 import 'package:budget/struct/settings.dart';
 import 'package:budget/widgets/animatedExpanded.dart';
@@ -20,7 +20,7 @@ import 'package:budget/widgets/openBottomSheet.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:budget/colors.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:in_app_review/in_app_review.dart';
 import 'package:budget/widgets/framework/popupFramework.dart';
 
@@ -216,22 +216,19 @@ Future<bool> shareFeedback(String feedbackText, String feedbackType,
   }
 
   try {
-    FirebaseFirestore? db = await firebaseGetDBInstanceAnonymous();
-    if (db == null) {
-      throw ("Can't connect to db");
-    }
+    //  Supabase Feedback Insert
+
     Map<String, dynamic> feedbackEntry = {
       "stars": (selectedStars ?? -1) + 1,
       "feedback": feedbackText,
-      "dateTime": DateTime.now(),
+      "dateTime": DateTime.now().toIso8601String(),
       "feedbackType": feedbackType,
       "email": feedbackEmail,
       "platform": getPlatform().toString(),
       "appVersion": getVersionString(),
     };
 
-    DocumentReference feedbackCreatedOnCloud =
-        await db.collection("feedback").add(feedbackEntry);
+    await SupabaseManager().client.from("feedback").insert(feedbackEntry);
 
     openSnackbar(SnackbarMessage(
         title: "feedback-shared".tr(),

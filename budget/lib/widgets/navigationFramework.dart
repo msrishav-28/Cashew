@@ -18,6 +18,7 @@ import 'package:budget/pages/editBudgetPage.dart';
 import 'package:budget/pages/editObjectivesPage.dart';
 import 'package:budget/pages/editWalletsPage.dart';
 import 'package:budget/pages/homePage/homePage.dart';
+import 'package:budget/pages/groups/groupsListPage.dart';
 import 'package:budget/pages/notificationsPage.dart';
 import 'package:budget/pages/objectivesListPage.dart';
 import 'package:budget/pages/onBoardingPage.dart';
@@ -35,7 +36,7 @@ import 'package:budget/struct/navBarIconsData.dart';
 import 'package:budget/struct/quickActions.dart';
 import 'package:budget/struct/settings.dart';
 import 'package:budget/struct/shareBudget.dart';
-import 'package:budget/struct/syncClient.dart';
+import 'package:budget/controllers/syncController.dart';
 import 'package:budget/widgets/accountAndBackup.dart';
 import 'package:budget/widgets/bottomNavBar.dart';
 import 'package:budget/widgets/button.dart';
@@ -71,7 +72,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_lazy_indexed_stack/flutter_lazy_indexed_stack.dart';
-import 'package:googleapis/drive/v3.dart';
+import 'package:budget/database/supabase_manager.dart';
 import 'package:provider/provider.dart';
 // import 'package:feature_discovery/feature_discovery.dart';
 
@@ -278,6 +279,7 @@ class PageNavigationFramework extends StatefulWidget {
 GlobalKey<HomePageState> homePageStateKey = GlobalKey();
 GlobalKey<TransactionsListPageState> transactionsListPageStateKey = GlobalKey();
 GlobalKey<BudgetsListPageState> budgetsListPageStateKey = GlobalKey();
+GlobalKey<GroupsListPageState> groupsListPageStateKey = GlobalKey();
 GlobalKey<MoreActionsPageState> settingsPageStateKey = GlobalKey();
 GlobalKey<SettingsPageFrameworkState> settingsPageFrameworkStateKey =
     GlobalKey();
@@ -310,20 +312,20 @@ Future<bool> runAllCloudFunctions(BuildContext context,
   try {
     loadingIndeterminateKey.currentState?.setVisibility(true);
     await runForceSignIn(context);
-    await syncData(context);
+    await SyncController().sync();
     if (appStateSettings["emailScanningPullToRefresh"] ||
         entireAppLoaded == false) {
       loadingIndeterminateKey.currentState?.setVisibility(true);
       await parseEmailsInBackground(context, forceParse: true);
     }
     loadingIndeterminateKey.currentState?.setVisibility(true);
-    await syncPendingQueueOnServer(); //sync before download
+    // await syncPendingQueueOnServer(); // Managed by SyncController now
     loadingIndeterminateKey.currentState?.setVisibility(true);
-    await getCloudBudgets();
+    // await getCloudBudgets(); // Managed by SyncController
     loadingIndeterminateKey.currentState?.setVisibility(true);
     await createBackupInBackground(context);
     loadingIndeterminateKey.currentState?.setVisibility(true);
-    await getExchangeRates();
+    // await getExchangeRates(); // Placeholder if not needed yet
   } catch (e) {
     print("Error running sync functions on load: " + e.toString());
     loadingIndeterminateKey.currentState?.setVisibility(false);
@@ -333,13 +335,12 @@ Future<bool> runAllCloudFunctions(BuildContext context,
             e.status == 401 &&
             forceSignIn == true ||
         e is PlatformException) {
-      // Request had invalid authentication credentials. Try logging out and back in.
-      // This stems from silent sign-in not providing the credentials for GDrive API for e.g.
-      await refreshGoogleSignIn();
+      // Request had invalid authentication credentials. Try refreshing the session.
+      await SupabaseManager().client.auth.refreshSession();
       runAllCloudFunctions(context);
     } else {
       if (kIsWeb && appStateSettings["webForceLoginPopupOnLaunch"] == true) {
-        signOutGoogle();
+        await SupabaseManager().client.auth.signOut();
       }
     }
     return false;
@@ -377,6 +378,7 @@ class PageNavigationFrameworkState extends State<PageNavigationFramework> {
         key: upcomingOverdueTransactionsStateKey,
         overdueTransactions: null), //16
     CreditDebtTransactions(key: creditDebtTransactionsKey, isCredit: null), //17
+    GroupsListPage(key: groupsListPageStateKey, enableBackButton: false), //18
   ];
 
   late int currentPage = widget.widthSideNavigationBar <= 0

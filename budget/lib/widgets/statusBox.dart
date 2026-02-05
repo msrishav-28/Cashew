@@ -1,5 +1,6 @@
 import 'package:budget/widgets/tappable.dart';
 import 'package:budget/widgets/textWidgets.dart';
+import 'package:budget/struct/design_system.dart';
 import 'package:flutter/material.dart';
 
 class StatusBox extends StatelessWidget {
@@ -27,15 +28,15 @@ class StatusBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadiusDirectional.all(Radius.circular(15)),
-        border: Border.all(color: color, width: 2),
+      decoration: DesignSystem.effects.glassCard.copyWith(
+        border: Border.all(color: color.withOpacity(0.5), width: 2),
+        color: color.withOpacity(0.2),
       ),
       margin: padding ?? EdgeInsetsDirectional.all(10),
       child: Tappable(
         borderRadius: 12,
         onTap: onTap,
-        color: color.withOpacity(0.4),
+        color: Colors.transparent,
         child: Padding(
           padding:
               EdgeInsetsDirectional.symmetric(horizontal: 17, vertical: 10),

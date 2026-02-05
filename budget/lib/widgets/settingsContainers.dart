@@ -1,6 +1,7 @@
 import 'package:budget/colors.dart';
 import 'package:budget/functions.dart';
 import 'package:budget/struct/settings.dart';
+import 'package:budget/struct/design_system.dart';
 import 'package:budget/widgets/animatedExpanded.dart';
 import 'package:budget/widgets/dropdownSelect.dart';
 import 'package:budget/widgets/editRowEntry.dart';
@@ -596,7 +597,10 @@ class SettingsContainer extends StatelessWidget {
               color: backgroundColor ?? Colors.transparent,
               onTap: onTap,
               onLongPress: onLongPress,
-              child: Padding(
+              child: Container(
+                decoration: backgroundColor == null 
+                  ? DesignSystem.effects.glassCard 
+                  : null, 
                 padding: EdgeInsetsDirectional.symmetric(
                   horizontal: horizontalPadding ?? 18,
                   // (enableBorderRadius &&

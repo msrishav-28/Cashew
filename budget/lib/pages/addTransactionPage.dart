@@ -19,7 +19,7 @@ import 'package:budget/struct/uploadAttachment.dart';
 import 'package:budget/widgets/accountAndBackup.dart';
 import 'package:budget/widgets/navigationFramework.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:googleapis/drive/v3.dart' as drive;
+
 import 'package:budget/widgets/button.dart';
 import 'package:budget/widgets/categoryIcon.dart';
 import 'package:budget/widgets/dropdownSelect.dart';
@@ -67,6 +67,7 @@ import 'package:budget/struct/linkHighlighter.dart';
 import 'package:budget/widgets/listItem.dart';
 import 'package:budget/widgets/outlinedButtonStacked.dart';
 import 'package:budget/widgets/tappableTextEntry.dart';
+import 'package:budget/struct/designSystem.dart';
 
 //TODO
 //only show the tags that correspond to selected category
@@ -1107,9 +1108,11 @@ class _AddTransactionPageState extends State<AddTransactionPage>
                 padding: const EdgeInsetsDirectional.symmetric(horizontal: 10),
                 child: AnimatedSwitcher(
                   duration: Duration(milliseconds: 300),
+                child: Container(
+                  decoration: DesignSystem.effects.glassCard,
                   child: DateButton(
                     internalPadding: EdgeInsetsDirectional.only(
-                        start: 12, bottom: 6, top: 6, end: 8),
+                        start: 12, bottom: 12, top: 12, end: 12),
                     key: ValueKey(selectedDate.toString()),
                     initialSelectedDate: selectedDate,
                     initialSelectedTime: TimeOfDay(
@@ -1122,6 +1125,7 @@ class _AddTransactionPageState extends State<AddTransactionPage>
                           hour: time.hour, minute: time.minute);
                     },
                   ),
+                ),
                 ),
               ),
               enableDoubleColumn(context) == false
@@ -1735,7 +1739,10 @@ class _AddTransactionPageState extends State<AddTransactionPage>
     Widget transactionAmountAndCategoryHeader = AnimatedContainer(
       curve: Curves.easeInOut,
       duration: Duration(milliseconds: 300),
-      color: categoryColor,
+      decoration: DesignSystem.effects.glassCard.copyWith(
+        color: categoryColor.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Column(
         children: [
           GestureDetector(
@@ -2237,8 +2244,7 @@ class SelectIncludeAmount extends StatelessWidget {
               : Icons.cancel_rounded,
       title: "include-amount".tr(),
       enableBorderRadius: true,
-      backgroundColor:
-          Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.7),
+      backgroundColor: null,
       initialValue: selectedPaid,
       onSwitched: onSwitched,
     );
@@ -3328,19 +3334,24 @@ class _SelectExcludeBudgetState extends State<SelectExcludeBudget> {
             );
           return Padding(
               padding: const EdgeInsetsDirectional.only(top: 5),
-              child: SelectChips(
-                wrapped: widget.wrapped ?? enableDoubleColumn(context),
-                extraHorizontalPadding: widget.extraHorizontalPadding,
-                onLongPress: (Budget item) {
-                  pushRoute(
-                    context,
-                    AddBudgetPage(
-                      budget: item,
-                      routesToPopAfterDelete:
-                          RoutesToPopAfterDelete.PreventDelete,
-                    ),
-                  );
-                },
+              child: Container(
+                decoration: DesignSystem.effects.glassCard,
+                padding: EdgeInsetsDirectional.symmetric(vertical: 10, horizontal: 10),
+                child: SelectChips(
+                  wrapped: widget.wrapped ?? enableDoubleColumn(context),
+                  extraHorizontalPadding: widget.extraHorizontalPadding,
+                  onLongPress: (Budget item) {
+                    pushRoute(
+                      context,
+                      AddBudgetPage(
+                        budget: item,
+                        routesToPopAfterDelete:
+                            RoutesToPopAfterDelete.PreventDelete,
+                      ),
+                    );
+                  },
+                ),
+              ),
                 extraWidgetAfter: SelectChipsAddButtonExtraWidget(
                   openPage: AddBudgetPage(
                     routesToPopAfterDelete: RoutesToPopAfterDelete.One,

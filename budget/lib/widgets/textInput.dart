@@ -1,5 +1,6 @@
 import 'package:budget/functions.dart';
 import 'package:budget/struct/settings.dart';
+import 'package:budget/struct/design_system.dart';
 import 'package:budget/widgets/framework/popupFramework.dart';
 import 'package:budget/widgets/textWidgets.dart';
 import 'package:budget/widgets/util/contextMenu.dart';
@@ -146,17 +147,12 @@ class TextInput extends StatelessWidget {
       child: Padding(
         padding: padding,
         child: Container(
-          decoration: BoxDecoration(
-            color: bubbly == false
-                ? Colors.transparent
-                : backgroundColor ??
-                    (appStateSettings["materialYou"]
-                        ? Theme.of(context).colorScheme.secondaryContainer
-                        : getColor(context, "canvasContainer")),
-            borderRadius: borderRadius ??
-                BorderRadiusDirectional.circular(
-                    getPlatform() == PlatformOS.isIOS ? 8 : 15),
-          ),
+          decoration: bubbly == false
+              ? null
+              : DesignSystem.effects.glassCard.copyWith(
+                  color: backgroundColor ?? DesignSystem.colors.glassClear,
+                  borderRadius: borderRadius ?? DesignSystem.dimensions.borderRadiusM,
+                ),
           child: Center(
             child: TextFormField(
               contextMenuBuilder: contextMenuBuilder,
@@ -194,17 +190,10 @@ class TextInput extends StatelessWidget {
               onEditingComplete: onEditingComplete,
               textAlign: textAlign,
               autocorrect: autocorrect,
-              style: TextStyle(
-                fontSize:
-                    fontSize != null ? fontSize : (bubbly == false ? 18 : 15),
-                height: kIsWeb
-                    ? null
-                    : bubbly == true
-                        ? 1.7
-                        : 1.3,
+              style: DesignSystem.typography.body.copyWith(
+                fontSize: fontSize != null ? fontSize : (bubbly == false ? 18 : 15),
+                height: kIsWeb ? null : 1.3,
                 fontWeight: fontWeight,
-                fontFamily: appStateSettings["font"],
-                fontFamilyFallback: ['Inter'],
               ),
               cursorColor: dynamicPastel(
                   context, Theme.of(context).colorScheme.primary,

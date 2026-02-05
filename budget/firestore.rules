@@ -1,0 +1,58 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email != null;
+    }
+
+    function isGroupMember(groupId) {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/groups/$(groupId)).data.memberEmails != null &&
+        get(/databases/$(database)/documents/groups/$(groupId)).data.memberEmails.hasAny([
+          request.auth.token.email
+        ]);
+    }
+
+    function isGroupOwner(groupId) {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/groups/$(groupId)).data.createdBy == request.auth.uid;
+    }
+
+    match /groups/{groupId} {
+      allow read: if isGroupMember(groupId);
+      allow create: if isSignedIn();
+      allow update, delete: if isGroupOwner(groupId);
+
+      match /members/{memberId} {
+        allow read: if isGroupMember(groupId);
+        allow create, update, delete: if isGroupOwner(groupId);
+      }
+
+      match /expenses/{expenseId} {
+        allow read: if isGroupMember(groupId);
+        allow create, update, delete: if isGroupMember(groupId);
+
+        match /splits/{splitId} {
+          allow read: if isGroupMember(groupId);
+          allow create, update, delete: if isGroupMember(groupId);
+        }
+      }
+
+      match /settlements/{settlementId} {
+        allow read: if isGroupMember(groupId);
+        allow create, update, delete: if isGroupMember(groupId);
+      }
+
+      match /balances/{balanceId} {
+        allow read: if isGroupMember(groupId);
+        allow create, update, delete: if isGroupOwner(groupId);
+      }
+
+      match /activity/{activityId} {
+        allow read: if isGroupMember(groupId);
+        allow create: if isGroupMember(groupId);
+        allow update, delete: if isGroupOwner(groupId);
+      }
+    }
+  }
+}
